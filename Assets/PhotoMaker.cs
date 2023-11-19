@@ -49,7 +49,6 @@ public class PhotoMaker : MonoBehaviour
 	void Start()
 	{
 		stepCount = 0;
-		subject.transform.position = subjectPos;
 		
 		// A legnagyobb számozású run mappa megtalálása
 		string path = defaultDir + Path.DirectorySeparatorChar + "Backgrounds";
@@ -95,12 +94,12 @@ public class PhotoMaker : MonoBehaviour
 			float[] posOrNeg = { 1, -1 };
 			Camera.transform.position = new Vector3(
 				getRandomIn(4,15, posOrNeg),
-				getRandomIn(-0.5f,10),
+				getRandomIn(0.5f,10),
 				getRandomIn(3,15, posOrNeg)
-
+			
 			);
 
-			var carRandomizedLocation = subject.transform.position + new Vector3(
+			var carRandomizedLocation = subjectPos + new Vector3(
 				getRandomIn(0, 4, posOrNeg),
 				getRandomIn(0, 2),
 				getRandomIn(0, 3, posOrNeg)
@@ -130,10 +129,10 @@ public class PhotoMaker : MonoBehaviour
 
 	private void StoreData(string imageName)
 	{
-		var subjectRelativePos = Camera.transform.InverseTransformDirection(subject.transform.position - Camera.transform.position);
-		var subjectRelativeDir = Camera.transform.InverseTransformDirection(subjectDirection - Camera.transform.position);
+		var subjectRelativePos = Camera.transform.InverseTransformDirection(subjectPos - Camera.transform.position);
+		var subjectRelativeDir = Camera.transform.InverseTransformDirection(subjectDirection - subjectPos);
 
-		var carDir = subjectRelativeDir - subjectRelativePos;
+		//var carDir = subjectRelativeDir - subjectRelativePos;
 
 
 		data.Data.Add(
@@ -144,7 +143,7 @@ public class PhotoMaker : MonoBehaviour
 				category = "car",
 				distance = subjectRelativePos.magnitude,
 				position = convertToArray(subjectRelativePos),
-				orientation = convertToArray(carDir),
+				orientation = convertToArray(subjectRelativeDir),
 			});
 	}
 
@@ -164,27 +163,6 @@ public class PhotoMaker : MonoBehaviour
 		Destroy(image);
 
 		File.WriteAllBytes(newRunPath + Path.DirectorySeparatorChar + imageName, bytes);
-
-		//coco.images.Add(new Image()
-		//{
-		//	id = stepCount,
-		//	width = Camera.targetTexture.width,
-		//	height = Camera.targetTexture.height,
-		//	file_name = "image" + stepCount + ".png",
-		//
-		//});
-		//
-		//// A tárgy bounding boxa
-		//Rect bounds = Helper.GUI2dRectWithObject(subject, Camera);
-		//coco.annotations.Add(new Annotation()
-		//{
-		//	id = stepCount,
-		//	image_id = stepCount,
-		//	category_id = 1,
-		//	bbox = new int[4] { (int)bounds.x, (int)bounds.y, (int)bounds.width,(int)bounds.height },
-		//	area = (int)bounds.width*(int)bounds.height,
-		//	iscrowd = 0,
-		//});
 	}
 	private float[] convertToArray(Vector3 vec)
 	{
